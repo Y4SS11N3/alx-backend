@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""
-Flask app with Babel setup, locale selector,
-forced locale, and mock login
-"""
+"""Flask app with Babel, locale selection, forced locale, and mock login"""
 from flask import Flask, render_template, request, g
 from flask_babel import Babel
-
+from typing import Dict, Union
 
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
@@ -27,7 +24,7 @@ app.config.from_object(Config)
 babel = Babel(app)
 
 
-def get_user():
+def get_user() -> Union[Dict, None]:
     """Returns a user dictionary or None if ID cannot be found"""
     login_id = request.args.get('login_as')
     if login_id:
@@ -36,13 +33,13 @@ def get_user():
 
 
 @app.before_request
-def before_request():
+def before_request() -> None:
     """Find a user if any, and set it as a global on flask.g.user"""
     g.user = get_user()
 
 
 @babel.localeselector
-def get_locale():
+def get_locale() -> str:
     """Determine the best match with our supported languages"""
     locale = request.args.get('locale')
     if locale and locale in app.config['LANGUAGES']:
@@ -51,7 +48,7 @@ def get_locale():
 
 
 @app.route('/', strict_slashes=False)
-def index():
+def index() -> str:
     """Render the index page"""
     return render_template('5-index.html')
 
